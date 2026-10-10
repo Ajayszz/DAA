@@ -4,16 +4,22 @@ using namespace std;
 class Graph
 {
     int V;
-    int adj[10][10];
+    int** adj;
 
 public:
     Graph(int v)
     {
         V = v;
 
+        adj = new int*[V];
+
         for (int i = 0; i < V; i++)
+        {
+            adj[i] = new int[V];
+
             for (int j = 0; j < V; j++)
                 adj[i][j] = 0;
+        }
     }
 
     void addEdge(int u, int v)
@@ -33,21 +39,76 @@ public:
                 DFS(v, visited);
         }
     }
+
+    ~Graph()
+    {
+        for (int i = 0; i < V; i++)
+            delete[] adj[i];
+
+        delete[] adj;
+    }
 };
 
 int main()
 {
-    Graph g(5);
+    int V, E;
 
-    g.addEdge(0, 1);
-    g.addEdge(0, 2);
-    g.addEdge(1, 3);
-    g.addEdge(1, 4);
+    cout << "Enter number of vertices: ";
+    cin >> V;
 
-    bool visited[5] = {false};
+    if (V <= 0)
+    {
+        cout << "Invalid number of vertices";
+        return 0;
+    }
+
+    Graph g(V);
+
+    cout << "Enter number of edges: ";
+    cin >> E;
+
+    if (E < 0)
+    {
+        cout << "Invalid number of edges";
+        return 0;
+    }
+
+    cout << "Enter each edge (u v), using vertices 0 to "
+         << V - 1 << ":\n";
+
+    for (int i = 0; i < E; i++)
+    {
+        int u, v;
+        cin >> u >> v;
+
+        if (u < 0 || u >= V || v < 0 || v >= V)
+        {
+            cout << "Invalid edge";
+            return 0;
+        }
+
+        g.addEdge(u, v);
+    }
+
+    int start;
+    cout << "Enter starting vertex: ";
+    cin >> start;
+
+    if (start < 0 || start >= V)
+    {
+        cout << "Invalid starting vertex";
+        return 0;
+    }
+
+    bool* visited = new bool[V];
+
+    for (int i = 0; i < V; i++)
+        visited[i] = false;
 
     cout << "DFS Traversal: ";
-    g.DFS(0, visited);
+    g.DFS(start, visited);
+
+    delete[] visited;
 
     return 0;
 }
